@@ -41,6 +41,14 @@ def cd(*dir_name):
                 print('Такой папки не существует внутри текущей')
 
 
+def mkfile(*file_names):
+    try:
+        for name in file_names:
+            file_path = os.path.join(current_dir, name)
+            open(file_path, 'w').close()
+    except FileExistsError:
+        print(f'Файл с именем "{name}" уже существует')
+
 
 while True:
     print(f'{current_dir}: ', end='')
@@ -48,7 +56,7 @@ while True:
     try:
         command_name = command[0]
         command_key = command[1:]
-        if command_name in ['mkdir', 'rm', 'cd']:
+        if command_name in ['mkdir', 'rm', 'cd', 'mkfile']:
             if command_key:
                 globals()[command_name](*command_key)
             else:
