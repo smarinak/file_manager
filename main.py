@@ -6,21 +6,21 @@ current_dir = settings.working_directory
 
 
 def mkdir(*dir_names):
-    try:
-        for name in dir_names:
+    for name in dir_names:
+        try:
             os.mkdir(os.path.join(current_dir, name))
-    except FileExistsError:
-        print(f'Папка с именем "{name}" уже существует')
+        except FileExistsError:
+            print(f'Папка с именем "{name}" уже существует')
 
 
-def rm(*dir_names):
-    try:
-        for name in dir_names:
+def rmdir(*dir_names):
+    for name in dir_names:
+        try:
             os.rmdir(os.path.join(current_dir, name))
-    except FileNotFoundError:
-        print(f'Папки с именем "{name}" не существует внутри текущей директории')
-    except OSError:
-        print('Ошибка удаления папки')  # пояснить!!!
+        except FileNotFoundError:
+            print(f'Папки с именем "{name}" не существует внутри текущей директории')
+        except OSError:
+            print('Ошибка удаления папки')  # пояснить!!!
 
 
 def cd(*dir_name):
@@ -42,12 +42,12 @@ def cd(*dir_name):
 
 
 def mkfile(*file_names):
-    try:
-        for name in file_names:
+    for name in file_names:
+        try:
             file_path = os.path.join(current_dir, name)
             open(file_path, 'w').close()
-    except FileExistsError:
-        print(f'Файл с именем "{name}" уже существует')
+        except FileExistsError:
+            print(f'Файл с именем "{name}" уже существует')
 
 
 def write(*params):
@@ -79,6 +79,14 @@ def read(*file_name):
             print(f'Доступ для чтения файла "{file_name[0]}" запрещен')
 
 
+def rmfile(*file_names):
+    for name in file_names:
+        try:
+            file_path = os.path.join(current_dir, name)
+            os.remove(file_path)
+        except FileNotFoundError:
+            print(f'Файла "{name}" не существует внутри текущей папки')
+
 
 while True:
     print(f'{current_dir}: ', end='')
@@ -86,7 +94,7 @@ while True:
     try:
         command_name = command[0]
         command_key = command[1:]
-        if command_name in ['mkdir', 'rm', 'cd', 'mkfile', 'write', 'read']:
+        if command_name in ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile']:
             if command_key:
                 globals()[command_name](*command_key)  # пояснить!!!
             else:
