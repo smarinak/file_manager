@@ -1,11 +1,13 @@
 import os
+import shutil
+
 import settings
 
 work_dir = settings.working_directory
 current_dir = settings.working_directory
 
 
-def mkdir(*dir_names):
+def mkdir(*dir_names):  # пояснить!!!
     for name in dir_names:
         try:
             os.mkdir(os.path.join(current_dir, name))
@@ -88,13 +90,34 @@ def rmfile(*file_names):
             print(f'Файла "{name}" не существует внутри текущей папки')
 
 
+def copy(*params):
+    if len(params) == 2:
+        file_name = params[0]
+        dir_path = params[1]
+        try:
+            out_path = os.path.join(current_dir, file_name)
+            in_path = os.path.abspath(os.path.join(current_dir, dir_path, file_name))
+            if 'working_directory' in in_path:
+                shutil.copyfile(out_path, in_path)
+            else:
+                print('Нельзя подняться выше корневой папки')
+        except FileNotFoundError:
+            print(f'Файла "{file_name}" не существует внутри текущей папки\nИли относительный путь к директории указан неверно')
+        except shutil.SameFileError:
+            print('Нельзя копировать файл в ту же самую директорию')
+
+
+    else:
+        print('Вам следует передать 2 параметра: имя файла для копирования и путь в директорию')
+
+
 while True:
     print(f'{current_dir}: ', end='')
     command = input().split()
     try:
         command_name = command[0]
         command_key = command[1:]
-        if command_name in ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile']:
+        if command_name in ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy']:
             if command_key:
                 globals()[command_name](*command_key)  # пояснить!!!
             else:
