@@ -111,13 +111,30 @@ def copy(*params):
         print('Вам следует передать 2 параметра: имя файла для копирования и путь в директорию')
 
 
+def move(*params):
+    if len(params) == 2:
+        file_name = params[0]
+        dir_path = params[1]
+        try:
+            out_path = os.path.join(current_dir, file_name)
+            in_path = os.path.abspath(os.path.join(current_dir, dir_path, file_name))
+            if 'working_directory' in in_path:
+                shutil.move(out_path, in_path)
+            else:
+                print('Нельзя подняться выше корневой папки')
+        except FileNotFoundError:
+            print(f'Файла "{file_name}" не существует внутри текущей папки\nИли относительный путь к директории указан неверно')
+    else:
+        print('Вам следует передать 2 параметра: имя файла для копирования и путь в директорию')
+
+
 while True:
     print(f'{current_dir}: ', end='')
     command = input().split()
     try:
         command_name = command[0]
         command_key = command[1:]
-        if command_name in ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy']:
+        if command_name in ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move']:
             if command_key:
                 globals()[command_name](*command_key)  # пояснить!!!
             else:
