@@ -3,7 +3,7 @@ import shutil
 
 import settings
 
-work_dir = settings.working_directory
+root_dir = settings.working_directory
 current_dir = settings.working_directory
 
 
@@ -31,7 +31,7 @@ def cd(*dir_name):
         print('Вам следует передать только 1 параметр')
     else:
         if '..' in dir_name[0]:
-            if work_dir not in current_dir:
+            if root_dir not in current_dir:
                 current_dir = os.path.abspath(os.path.join(current_dir, dir_name[0]))
             else:
                 print('Нельзя подняться выше корневой папки')
@@ -106,7 +106,7 @@ def copy(*params):
         try:
             out_path = os.path.join(current_dir, file_name)
             in_path = os.path.abspath(os.path.join(current_dir, dir_path, file_name))
-            if work_dir in in_path:
+            if root_dir in in_path:
                 shutil.copyfile(out_path, in_path)
             else:
                 print('Нельзя подняться выше корневой папки')
@@ -125,7 +125,7 @@ def move(*params):
         try:
             out_path = os.path.join(current_dir, file_name)
             in_path = os.path.abspath(os.path.join(current_dir, dir_path, file_name))
-            if work_dir in in_path:
+            if root_dir in in_path:
                 shutil.move(out_path, in_path)
             else:
                 print('Нельзя подняться выше корневой папки')
@@ -164,4 +164,7 @@ while True:
         else:
             print('Такой команды не существует')
     except IndexError:
-        print('Вы не передали название команды')
+        if (input('Если вы хотите завершить работу напишите "true", иначе любое другое сообщение\n')) == 'true':
+            break
+        else:
+            print('Вы не передали название команды')
