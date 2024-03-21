@@ -210,7 +210,12 @@ def dflist():
         print(f"Ошибка: {e}")
 
 
-command_list = ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move', 'chname', 'reguser', 'chuser', 'dflist']
+def help():
+    with open('commands.txt', 'r') as file:
+        print(file.read())
+
+
+command_list = ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move', 'chname', 'reguser', 'chuser', 'dflist', 'help']
 while True:
     print(f'{current_dir}: ', end='')
     command = input().split()
@@ -218,7 +223,7 @@ while True:
         command_name = command[0]
         command_key = command[1:]
         if command_name in command_list:
-            if command_key or command_name == 'dflist':
+            if command_key or command_name in ['dflist', 'help']:
                 globals()[command_name](*command_key)
             else:
                 print('Вы не передали параметры')
