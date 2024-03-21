@@ -198,7 +198,19 @@ def chuser(*params):
         print('Вам следует передать 2 параметра: имя пользователя и пароль')
 
 
-command_list = ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move', 'chname', 'reguser', 'chuser']
+def dflist():
+    try:
+        files_and_directories = os.listdir(current_dir)
+        if files_and_directories:
+            for item in files_and_directories:
+                print(item)
+        else:
+            print("Нет файлов и папок в текущей директории")
+    except Exception as e:
+        print(f"Ошибка: {e}")
+
+
+command_list = ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move', 'chname', 'reguser', 'chuser', 'dflist']
 while True:
     print(f'{current_dir}: ', end='')
     command = input().split()
@@ -206,7 +218,7 @@ while True:
         command_name = command[0]
         command_key = command[1:]
         if command_name in command_list:
-            if command_key:
+            if command_key or command_name == 'dflist':
                 globals()[command_name](*command_key)
             else:
                 print('Вы не передали параметры')
