@@ -1,10 +1,12 @@
 import os
 import shutil
+import hashlib
 
 import settings
 
 root_dir = settings.working_directory
-current_dir = settings.working_directory
+user_root_dir = settings.user_working_directory
+current_dir = settings.user_working_directory
 
 
 def mkdir(*dir_names):
@@ -31,7 +33,7 @@ def cd(*dir_name):
         print('Вам следует передать только 1 параметр')
     else:
         if '..' in dir_name[0]:
-            if root_dir not in current_dir:
+            if user_root_dir not in current_dir:
                 current_dir = os.path.abspath(os.path.join(current_dir, dir_name[0]))
             else:
                 print('Нельзя подняться выше корневой папки')
@@ -106,7 +108,7 @@ def copy(*params):
         try:
             out_path = os.path.join(current_dir, file_name)
             in_path = os.path.abspath(os.path.join(current_dir, dir_path, file_name))
-            if root_dir in in_path:
+            if user_root_dir in in_path:
                 shutil.copyfile(out_path, in_path)
             else:
                 print('Нельзя подняться выше корневой папки')
@@ -125,7 +127,7 @@ def move(*params):
         try:
             out_path = os.path.join(current_dir, file_name)
             in_path = os.path.abspath(os.path.join(current_dir, dir_path, file_name))
-            if root_dir in in_path:
+            if user_root_dir in in_path:
                 shutil.move(out_path, in_path)
             else:
                 print('Нельзя подняться выше корневой папки')
@@ -149,7 +151,54 @@ def chname(*params):
         print('Вам следует передать 2 параметра: текущее и новое имя файла')
 
 
-command_list = ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move', 'chname']
+def reguser(*params):
+    if len(params) == 2:
+        username = params[0]
+        password = params[1]
+        try:
+            exist = False
+            with open('users.txt', 'r') as file:
+                for line in file:
+                    stored_username, _ = line.strip().split(':')
+                    if stored_username == username:
+                        print(f"Пользователь с именем '{username}' уже существует")
+                        exist = True
+            if not exist:
+                os.mkdir(os.path.join(root_dir, username))
+                hashed_password = hashlib.sha256(password.encode()).hexdigest()
+                with open('users.txt', 'a') as file:
+                    file.write(f"{username}:{hashed_password}\n")
+        except Exception as e:
+            print(f"Ошибка регистрации пользователя '{username}': {e}")
+    else:
+        print('Вам следует передать 2 параметра: имя нового пользователя и пароль')
+
+
+def chuser(*params):
+    global current_dir, user_root_dir
+    if len(params) == 2:
+        username = params[0]
+        password = params[1]
+        try:
+            right_name_password = False
+            # Хэшируем введенный пользователем пароль для сравнения с хэшем из файла
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+            with open('users.txt', 'r') as file:
+                for line in file:
+                    stored_username, stored_hashed_password = line.strip().split(':')
+                    if stored_username == username and stored_hashed_password == hashed_password:
+                        current_dir = os.path.join(root_dir, username)
+                        user_root_dir = os.path.join(root_dir, username)
+                        right_name_password = True
+            if not right_name_password:
+                print("Неверное имя пользователя или пароль")
+        except Exception as e:
+            print(f"Ошибка аутентификации пользователя '{username}': {e}")
+    else:
+        print('Вам следует передать 2 параметра: имя пользователя и пароль')
+
+
+command_list = ['mkdir', 'rmdir', 'cd', 'mkfile', 'write', 'read', 'rmfile', 'copy', 'move', 'chname', 'reguser', 'chuser']
 while True:
     print(f'{current_dir}: ', end='')
     command = input().split()
